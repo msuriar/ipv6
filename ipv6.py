@@ -3,6 +3,8 @@
 import doctest
 import re
 
+TOTAL_ADDRESS_CHUNKS = 8
+TOTAL_COLONS = TOTAL_ADDRESS_CHUNKS - 1
 
 class InvalidCharacterError(Exception):
   def __init__(self, value):
@@ -21,8 +23,12 @@ def expandIPv6Address(address):
     raise InvalidCharacterError('Invalid character found in address.')
 
 def calculatePadNibbles(address):
-  if checkValidAbbreviation:
-    pass
+  separated_address = checkValidAbbreviation(address)
+  if separated_address:
+    current_colons = sum(map(countColons, separated_address))
+    additional_colons = TOTAL_COLONS - current_colons
+    padding = r':0' * additional_colons + ':'
+    return padding.join(separated_address)
   else: return 0
 
 def checkValidAbbreviation(address):
@@ -30,7 +36,7 @@ def checkValidAbbreviation(address):
   if (len(separated_address) == 1) and separated_address[0] == address:
     return False
   elif (len(separated_address) == 2):
-    return True
+    return separated_address
   else:
     raise InvalidAbbreviationError('More than one :: in address.')
 
