@@ -6,13 +6,16 @@ import re
 TOTAL_ADDRESS_CHUNKS = 8
 TOTAL_COLONS = TOTAL_ADDRESS_CHUNKS - 1
 
-class InvalidCharacterError(Exception):
+class Error(Exception):
+  """Base error class."""
+
+class InvalidCharacterError(Error):
   def __init__(self, value):
     self.value = value
   def __str__(self):
     return repr(self.value)
 
-class InvalidAbbreviationError(Exception):
+class InvalidAbbreviationError(Error):
   def __init__(self, value):
     self.value = value
   def __str__(self):
