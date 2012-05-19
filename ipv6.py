@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+"""IPv6 utility module.
+
+Toy utility I wrote to get my head around TDD with python. If you actually want
+to do serious heavy lifting with IP addresses, use the ipaddr module here:
+  http://code.google.com/p/ipaddr-py/
+"""
 
 import doctest
 import re
@@ -31,16 +37,19 @@ class IPv6Prefix(object):
     self.__validate()
 
   def __validate(self):
+    """Call individual validation methods."""
     self.__validate_address()
     self.__validate_prefix_length()
 
   def __validate_address(self):
+    """Validate IPv6 address."""
     if not self.check_characters(self.address_str):
       raise CharacterError('Invalid character found in address.')
 
   def __validate_prefix_length(self):
+    """Validate IPv6 prefix length."""
     if (0 <= int(self.prefix_length_str) <= 128):
-      self.prefixLength = int(self.prefix_length_str)
+      self.prefix_length = int(self.prefix_length_str)
     else:
       raise PrefixLengthError("Prefix length %s is not valid." %
                               self.prefix_length_str)
@@ -48,24 +57,19 @@ class IPv6Prefix(object):
 
   @classmethod
   def expand_ipv6_address(cls, address):
-    pass
-
-  @classmethod
-  def calculate_pad_nibbles(cls, address):
+    """Take an abbreviated IPv6 address and expand the ::"""
     separated_address = cls.check_valid_abbreviation(address)
     if separated_address:
-      current_colons = sum(map(cls.count_colons, separated_address))
+      current_colons = sum([cls.count_colons(i) for i in separated_address])
       additional_colons = cls.TOTAL_COLONS - current_colons
-      padding = r':0' * additional_colons + ':'
+      padding = r':0' * (additional_colons-1) + ':'
       return padding.join(separated_address)
     else: return 0
 
   @classmethod
   def check_valid_abbreviation(cls, address):
     separated_address = address.split('::')
-    if (len(separated_address) == 1) and separated_address[0] == address:
-      return False
-    elif (len(separated_address) == 2):
+    if (len(separated_address) == 2):
       return separated_address
     else:
       raise AbbreviationError('More than one :: in address.')
