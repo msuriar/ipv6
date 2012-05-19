@@ -35,7 +35,7 @@ class IPv6Prefix(object):
     self.__validate_prefix_length()
 
   def __validate_address(self):
-    if not self.check_characters(address):
+    if not self.check_characters(self.address_str):
       raise CharacterError('Invalid character found in address.')
 
   def __validate_prefix_length(self):
