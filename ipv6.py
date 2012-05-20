@@ -58,7 +58,7 @@ class IPv6Prefix(object):
   @classmethod
   def expand_ipv6_address(cls, address):
     """Take an abbreviated IPv6 address and expand the ::"""
-    separated_address = cls.check_valid_abbreviation(address)
+    separated_address = cls.split_abbreviation(address)
     if separated_address:
       current_colons = sum([cls.count_colons(i) for i in separated_address])
       additional_colons = cls.TOTAL_COLONS - current_colons
@@ -67,12 +67,13 @@ class IPv6Prefix(object):
     else: return 0
 
   @classmethod
-  def check_valid_abbreviation(cls, address):
+  def split_abbreviation(cls, address):
     separated_address = address.split('::')
-    if (len(separated_address) == 2):
-      return separated_address
-    else:
+    if (len(separated_address) > 2):
       raise AbbreviationError('More than one :: in address.')
+    if separated_address[-1] == '':
+      separated_address[-1] = '0'
+    return separated_address
 
   @classmethod
   def pad_ipv6_address(cls, address):

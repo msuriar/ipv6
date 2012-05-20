@@ -13,7 +13,7 @@ class BadAddress(unittest.TestCase):
     badInputs = ('2001::0::0', '::1::1::', '1::::2')
     for s in badInputs:
       self.assertRaises(AbbreviationError,
-          IPv6Prefix.check_valid_abbreviation, s)
+          IPv6Prefix.split_abbreviation, s)
 
   def test_invalid_prefix_length(self):
     badInputs = ('2001::0/140', '2001::0/-30')
@@ -21,11 +21,20 @@ class BadAddress(unittest.TestCase):
       self.assertRaises(PrefixLengthError, IPv6Prefix, s)
 
 class AddressManipulation(unittest.TestCase):
-  expansions = (
+  valid_expansions = (
       ('2001::0', '2001:0:0:0:0:0:0:0'),
+      ('2001::', '2001:0:0:0:0:0:0:0'),
+      ('2001:0:0:0:0:0:0:0', '2001:0:0:0:0:0:0:0'),
+      ('2001:4860:4860::8844', '2001:4860:4860:0:0:0:0:8844'),
+      )
+
+  invalid_expansions = (
+      '2001::1::',
+      '2001::::',
+      '2001:1:2:3:4:6:7:8',
       )
   def test_address_expansion(self):
-    for brief,full in self.expansions:
+    for brief,full in self.valid_expansions:
       self.assertEqual(IPv6Prefix.expand_ipv6_address(brief), full)
 
 
